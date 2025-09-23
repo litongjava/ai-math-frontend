@@ -31,90 +31,91 @@ const ChatMessageList: React.FC<ChatListProps> = ({
                                                     loading,
                                                   }) => {
   const renderMarkdown = (raw: string, reasoning?: string | null, code_result?: CodeResult | null, code_error?: string[] | null) => (
-    <div className="markdown-content">
-      {reasoning && (
-        <Collapse
-          defaultActiveKey={['1']}
-          style={{marginBottom: 12}}
-          items={[{
-            key: '1',
-            label: 'Thought',
-            children: (
-              <MarkdownRenderer content={reasoning} loading={loading} onRunCode={(code, lang) => {
-                if (lang === 'html') {
-                  setPreviewHtml(code);
-                  setPreviewVisible(true);
-                } else {
-                  // 如果不是 HTML，可以弹个提示 or 忽略
-                }
-              }}/>
-            )
-          }]}
-        />
-      )}
-      <MarkdownRenderer content={raw} loading={loading} onRunCode={(code, lang) => {
-        if (lang === 'html') {
-          setPreviewHtml(code);
-          setPreviewVisible(true);
-        } else {
-          // 如果不是 HTML，可以弹个提示 or 忽略
-        }
-      }}/>
-      {code_error && code_error.length > 0 && (
-        <Collapse
-          defaultActiveKey={['1']}
-          style={{marginBottom: 12}}
-          items={[{
-            key: '1',
-            label: 'Error',
-            children: (
-              <>
-                {code_error.map((err: string, index: number) => (
-                  <Typography.Text key={index} style={{display: 'block'}}>
-                    {err}
-                  </Typography.Text>
-                ))}
-              </>
-            )
-          }]}
-        />
-      )}
-      {/* === 运行结果图片区 === */}
-      {code_result?.images?.length ? (
-        <div style={{marginTop: 16}}>
-          <Typography.Title level={5} style={{marginBottom: 8}}>
-            Images ({code_result.images.length})
-          </Typography.Title>
+      <div className="markdown-content">
+        {reasoning && (
+          <Collapse
+            defaultActiveKey={['1']}
+            style={{marginBottom: 12}}
+            items={[{
+              key: '1',
+              label: 'Thought',
+              children: (
+                <MarkdownRenderer content={reasoning} loading={loading} onRunCode={(code, lang) => {
+                  if (lang === 'html') {
+                    setPreviewHtml(code);
+                    setPreviewVisible(true);
+                  } else {
+                    // 如果不是 HTML，可以弹个提示 or 忽略
+                  }
+                }}/>
+              )
+            }]}
+          />
+        )}
+        <MarkdownRenderer content={raw} loading={loading} onRunCode={(code, lang) => {
+          if (lang === 'html') {
+            setPreviewHtml(code);
+            setPreviewVisible(true);
+          } else {
+            // 如果不是 HTML，可以弹个提示 or 忽略
+          }
+        }}/>
+        {code_error && code_error.length > 0 && (
+          <Collapse
+            defaultActiveKey={['1']}
+            style={{marginBottom: 12}}
+            items={[{
+              key: '1',
+              label: 'Error',
+              children: (
+                <>
+                  {code_error.map((err: string, index: number) => (
+                    <Typography.Text key={index} style={{display: 'block'}}>
+                      {err}
+                    </Typography.Text>
+                  ))}
+                </>
+              )
+            }]}
+          />
+        )}
 
-          {code_result?.stdErr && (
-            <Typography.Text>
-            Error ({code_result.stdErr})
-        </Typography.Text>
-      )}
+        {code_result ? (
+          <div style={{marginTop: 16}}>
 
-      <Image.PreviewGroup
-        preview={{
-          onChange: (current, prev) => console.log(`current index: ${current}, prev index: ${prev}`),
-        }}
-      >
+            {code_result?.stdErr && (
+              <Typography.Text>
+                Error:{code_result.stdErr}
+              </Typography.Text>
+            )}
 
-        {code_result.images.map((src, idx) => (
-          <div>
-            <Image
-              key={idx}
-              src={src}
-            />
+            {code_result?.images?.length > 0 && (
+              <div>
+                <Typography.Title level={5} style={{marginBottom: 8}}>
+                  Images ({code_result.images.length})
+                </Typography.Title>
+                <Image.PreviewGroup
+                  preview={{
+                    onChange: (current, prev) => console.log(`current index: ${current}, prev index: ${prev}`),
+                  }}
+                >
+
+                  {code_result.images.map((src, idx) => (
+                    <div>
+                      <Image
+                        key={idx}
+                        src={src}
+                      />
+                    </div>
+
+                  ))}
+                </Image.PreviewGroup>
+              </div>
+            )}
           </div>
-
-        ))}
-      </Image.PreviewGroup>
-    </div>
-  )
-:
-  null
-}
-</div>
-)
+        ) : null}
+      </div>
+    )
   ;
   const [showToast, setShowToast] = useState(false);
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
