@@ -30,7 +30,7 @@ const ChatMessageList: React.FC<ChatListProps> = ({
                                                     setPreviewVisible,
                                                     loading,
                                                   }) => {
-  const renderMarkdown = (raw: string, reasoning?: string | null, code_result?: CodeResult | null) => (
+  const renderMarkdown = (raw: string, reasoning?: string | null, code_result?: CodeResult | null, code_error?: string | null) => (
     <div className="markdown-content">
       {reasoning && (
         <Collapse
@@ -60,6 +60,21 @@ const ChatMessageList: React.FC<ChatListProps> = ({
           // 如果不是 HTML，可以弹个提示 or 忽略
         }
       }}/>
+      {code_error && (
+        <Collapse
+          defaultActiveKey={['1']}
+          style={{marginBottom: 12}}
+          items={[{
+            key: '1',
+            label: 'Error',
+            children: (
+              <Typography.Text>
+                {code_error}
+              </Typography.Text>
+            )
+          }]}
+        />
+      )}
       {/* === 运行结果图片区 === */}
       {code_result?.images?.length ? (
         <div style={{marginTop: 16}}>
@@ -111,8 +126,8 @@ const ChatMessageList: React.FC<ChatListProps> = ({
   );
 
   const renderAssistantMessage = useCallback(
-    (raw: string, reasoning: string | null, codeResult: CodeResult | null) =>
-      renderMarkdown(raw, reasoning, codeResult),
+    (raw: string, reasoning: string | null, codeResult: CodeResult | null, code_error: string | null) =>
+      renderMarkdown(raw, reasoning, codeResult, code_error),
     [renderMarkdown]
   );
 
@@ -147,7 +162,7 @@ const ChatMessageList: React.FC<ChatListProps> = ({
             if (!content && !i.reasoning_content) {
               return <Spin/>;
             } else {
-              return renderAssistantMessage(content, i.reasoning_content ?? null, i.code_result ?? null);
+              return renderAssistantMessage(content, i.reasoning_content ?? null, i.code_result ?? null, i.code_error ?? null);
             }
           },
           typing: false,

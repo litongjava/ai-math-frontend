@@ -125,6 +125,7 @@ export const VOLC_ENGINE_MODEL_OPTIONS = [
 
 export const TYPE_OPTIONS = [
   {label: 'Math', value: 'math'},
+  {label: 'Translator', value: 'translator'},
   {label: 'General', value: 'general'},
-  {label: 'Tutor', value: 'tutor'},
+
 ]

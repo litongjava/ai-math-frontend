@@ -163,6 +163,22 @@ export default function useAgentService(curSessionId: string) {
           });
           break;
         }
+        case 'code_error': {
+          const d = JSON.parse(event.data);
+          acc = {
+            ...acc,
+            model: d.model,
+            code_error: (acc.code_error || '') + ("Error:" + d.content + "\r\n" || ''),
+          };
+          setSessionMsgMap((prev) => {
+            const prevMsgs = prev[sid] || [];
+            return {
+              ...prev,
+              [sid]: [...prevMsgs.slice(0, -1), acc],
+            };
+          });
+          break;
+        }
         case 'done': {
           setSessionMsgMap((prev) => {
             const prevMsgs = prev[sid] || [];

@@ -14,6 +14,7 @@ export interface BubbleDataType {
   session_id: string;
   id?: string;
   content: string;             // 消息内容
+
   reasoning_content?: string;  // 推理内容
   role: string,
   model?: string;              // 模型名称
@@ -21,6 +22,7 @@ export interface BubbleDataType {
   question_id?: string;        // 问题ID（用户消息）
   answer_id?: string;          // 回答ID（助手消息）
   code_result?: CodeResult;
+  code_error?: string;             // 消息内容
 }
 
 export type ConversationItem = {
