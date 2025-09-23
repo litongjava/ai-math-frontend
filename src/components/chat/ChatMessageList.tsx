@@ -30,7 +30,7 @@ const ChatMessageList: React.FC<ChatListProps> = ({
                                                     setPreviewVisible,
                                                     loading,
                                                   }) => {
-  const renderMarkdown = (raw: string, reasoning?: string | null, code_result?: CodeResult | null, code_error?: string | null) => (
+  const renderMarkdown = (raw: string, reasoning?: string | null, code_result?: CodeResult | null, code_error?: string[] | null) => (
     <div className="markdown-content">
       {reasoning && (
         <Collapse
@@ -60,7 +60,7 @@ const ChatMessageList: React.FC<ChatListProps> = ({
           // 如果不是 HTML，可以弹个提示 or 忽略
         }
       }}/>
-      {code_error && (
+      {code_error && code_error.length > 0 && (
         <Collapse
           defaultActiveKey={['1']}
           style={{marginBottom: 12}}
@@ -68,9 +68,13 @@ const ChatMessageList: React.FC<ChatListProps> = ({
             key: '1',
             label: 'Error',
             children: (
-              <Typography.Text>
-                {code_error}
-              </Typography.Text>
+              <>
+                {code_error.map((err: string, index: number) => (
+                  <Typography.Text key={index} style={{display: 'block'}}>
+                    {err}
+                  </Typography.Text>
+                ))}
+              </>
             )
           }]}
         />
@@ -82,27 +86,36 @@ const ChatMessageList: React.FC<ChatListProps> = ({
             Images ({code_result.images.length})
           </Typography.Title>
 
-          <Image.PreviewGroup
-            preview={{
-              onChange: (current, prev) => console.log(`current index: ${current}, prev index: ${prev}`),
-            }}
-          >
+          {code_result?.stdErr && (
+            <Typography.Text>
+            Error ({code_result.stdErr})
+        </Typography.Text>
+      )}
 
-            {code_result.images.map((src, idx) => (
-              <div>
-                <Image
-                  key={idx}
-                  src={src}
-                />
-              </div>
+      <Image.PreviewGroup
+        preview={{
+          onChange: (current, prev) => console.log(`current index: ${current}, prev index: ${prev}`),
+        }}
+      >
 
-            ))}
-          </Image.PreviewGroup>
-        </div>
-      ) : null}
+        {code_result.images.map((src, idx) => (
+          <div>
+            <Image
+              key={idx}
+              src={src}
+            />
+          </div>
+
+        ))}
+      </Image.PreviewGroup>
     </div>
-  );
-
+  )
+:
+  null
+}
+</div>
+)
+  ;
   const [showToast, setShowToast] = useState(false);
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
@@ -126,7 +139,7 @@ const ChatMessageList: React.FC<ChatListProps> = ({
   );
 
   const renderAssistantMessage = useCallback(
-    (raw: string, reasoning: string | null, codeResult: CodeResult | null, code_error: string | null) =>
+    (raw: string, reasoning: string | null, codeResult: CodeResult | null, code_error: string[] | null) =>
       renderMarkdown(raw, reasoning, codeResult, code_error),
     [renderMarkdown]
   );

@@ -7,6 +7,7 @@ export interface CodeResult {
   sessionId: string;
   elapsed: string;
   executeCode: string;
+  stdErr?: string;
   images: string[];
 }
 
@@ -22,7 +23,7 @@ export interface BubbleDataType {
   question_id?: string;        // 问题ID（用户消息）
   answer_id?: string;          // 回答ID（助手消息）
   code_result?: CodeResult;
-  code_error?: string;             // 消息内容
+  code_error?: string[];             // 消息内容
 }
 
 export type ConversationItem = {
