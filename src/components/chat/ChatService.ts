@@ -168,4 +168,27 @@ export class ChatService {
       return [];
     }
   }
+  // 保存HTML并获取预览URL
+  static async saveHtmlAndGetUrl(token: string, htmlContent: string): Promise<string | null> {
+    try {
+      const response = await fetch(`${config.base_url}/api/v1/html/save`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: htmlContent // 直接发送 HTML 字符串
+      });
+
+      const result = await response.json();
+      if (result.code === 1 && result.ok) {
+        return result.data.url;
+      } else {
+        throw new Error(result.msg || '保存HTML失败');
+      }
+    } catch (error) {
+      showError(error, '保存HTML失败');
+      return null;
+    }
+  }
 }

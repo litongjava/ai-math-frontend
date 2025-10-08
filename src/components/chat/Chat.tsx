@@ -1,6 +1,6 @@
 // Chat.tsx
-import {CloseOutlined, MenuUnfoldOutlined, PlusOutlined,} from '@ant-design/icons';
-import {Button, message, Spin} from 'antd';
+import {CloseOutlined, MenuUnfoldOutlined, PlusOutlined, ShareAltOutlined,} from '@ant-design/icons';
+import {Button, Input, message, Modal, Spin} from 'antd';
 import {FC, useEffect, useRef, useState} from 'react';
 import './Chat.css';
 import {ConversationItem} from './types.ts';
@@ -34,6 +34,54 @@ const Chat: FC = () => {
 
   const toggleMobileSider = () => {
     setMobileSiderVisible(!mobileSiderVisible);
+  };
+  // 在 Chat 组件内部,其他 handler 函数附近添加:
+
+// 在组件内部添加处理函数
+  const handleShareHtml = async () => {
+    if (!token) {
+      message.error('未登录');
+      return;
+    }
+
+    if (!previewHtml) {
+      message.error('没有可分享的内容');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const url = await ChatService.saveHtmlAndGetUrl(token, previewHtml);
+      setLoading(false);
+
+      if (url) {
+        Modal.info({
+          title: '分享链接',
+          content: (
+            <div>
+              <p>HTML 已保存,可以通过以下链接访问:</p>
+              <Input.TextArea
+                value={url}
+                readOnly
+                autoSize={{minRows: 2, maxRows: 4}}
+                style={{marginTop: 10}}
+              />
+            </div>
+          ),
+          okText: '复制链接',
+          onOk: () => {
+            navigator.clipboard.writeText(url).then(() => {
+              message.success('链接已复制到剪贴板');
+            }).catch(() => {
+              message.error('复制失败,请手动复制');
+            });
+          }
+        });
+      }
+    } catch (error) {
+      setLoading(false);
+      showError(error, '分享失败');
+    }
   };
 
 
@@ -191,6 +239,7 @@ const Chat: FC = () => {
             background: '#fafafa'
           }}>
             <span style={{fontSize: 16, fontWeight: 500}}>Preview</span>
+            <Button type="text" icon={<ShareAltOutlined/>} onClick={handleShareHtml}/>
             <Button type="text" icon={<CloseOutlined/>} onClick={() => setPreviewVisible(false)}/>
           </div>
           <iframe
