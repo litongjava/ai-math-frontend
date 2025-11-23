@@ -42,8 +42,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   const [inputValue, setInputValue] = useState('');
 
-  const [platform, setPlatform] = useState<string>('openrouter');
-  const [model, setModel] = useState<string>('qwen/qwen3-coder');
+  const [platform, setPlatform] = useState<string>('auto');
+  const [model, setModel] = useState<string>('auto');
   const [type, setType] = useState<string>(TYPE_OPTIONS[0].value);
   const [tools, setTools] = useState<string[]>([]);
   const [historyEnabled, setHistoryEnabled] = useState(true);
